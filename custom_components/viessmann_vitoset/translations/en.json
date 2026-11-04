@@ -1,0 +1,76 @@
+{
+  "application_credentials": {
+    "description": "Create an API client at https://app.developer.viessmann-climatesolutions.com with redirect URI https://my.home-assistant.io/redirect/oauth, and enter its client ID. Viessmann clients have no secret, so enter any value as client secret."
+  },
+  "config": {
+    "step": {
+      "pick_implementation": {
+        "title": "Pick an authentication method"
+      },
+      "reauth_confirm": {
+        "title": "Log in again",
+        "description": "Your Viessmann login has expired. Log in again to keep receiving softener data."
+      }
+    },
+    "abort": {
+      "reauth_successful": "Logged in again.",
+      "missing_credentials": "Add your Viessmann client ID as application credentials first.",
+      "authorize_url_timeout": "Timed out generating the authorize URL.",
+      "no_url_available": "No URL available. Check the Home Assistant network configuration.",
+      "oauth_error": "Received invalid token data.",
+      "oauth_failed": "Error while obtaining the access token.",
+      "oauth_timeout": "Timed out resolving the OAuth token.",
+      "oauth_unauthorized": "OAuth authorization error while obtaining the access token.",
+      "user_rejected_authorize": "Account linking rejected.",
+      "missing_configuration": "No Viessmann client ID is configured."
+    },
+    "create_entry": {
+      "default": "Logged in to Viessmann."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "holiday_mode": {
+        "name": "Holiday mode"
+      },
+      "leak": {
+        "name": "Leak sensor {slot}"
+      }
+    },
+    "sensor": {
+      "salt_days_remaining": {
+        "name": "Salt days remaining"
+      },
+      "low_salt_alert_days": {
+        "name": "Low salt alert threshold"
+      },
+      "water_total": {
+        "name": "Water consumption total"
+      },
+      "water_today": {
+        "name": "Water consumption today"
+      },
+      "water_last_seven_days": {
+        "name": "Water consumption last 7 days"
+      },
+      "flow_current": {
+        "name": "Water flow"
+      },
+      "flow_max": {
+        "name": "Maximum water flow"
+      },
+      "valve_position": {
+        "name": "Shutoff valve position"
+      },
+      "valve_motor": {
+        "name": "Shutoff valve motor"
+      },
+      "leak_battery": {
+        "name": "Leak sensor {slot} battery"
+      },
+      "leak_rssi": {
+        "name": "Leak sensor {slot} signal strength"
+      }
+    }
+  }
+}
