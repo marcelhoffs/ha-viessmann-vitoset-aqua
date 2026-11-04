@@ -1,6 +1,6 @@
 # Viessmann Vitoset Aqua for Home Assistant
 
-<img src="images/vitoset-aqua.png" alt="Viessmann Vitoset Aqua water softeners" width="320">
+<img src="images/vitoset-aqua-v2.png" alt="Viessmann Vitoset Aqua water softeners" width="320">
 
 Brings the Viessmann Vitoset Aqua water softener into Home Assistant through
 the ViCare cloud API. It shows up in the ViCare app, but Home Assistant's own
