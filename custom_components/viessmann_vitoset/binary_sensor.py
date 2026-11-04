@@ -11,7 +11,6 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .coordinator import VitosetConfigEntry
 from .entity import VitosetEntity
-from .sensor import leak_slots
 
 
 async def async_setup_entry(
@@ -29,7 +28,7 @@ async def async_setup_entry(
             ),
         )
     ]
-    for slot in leak_slots(coordinator.data):
+    for slot in coordinator.data["leak_slots"]:
         entities.append(
             VitosetBinarySensor(
                 coordinator,
