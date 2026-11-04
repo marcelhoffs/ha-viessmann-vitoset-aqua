@@ -20,8 +20,6 @@ jobs:
         uses: hacs/action@main
         with:
           category: integration
-          # shortcut: no brand assets yet, add a brand/ folder before submitting to the HACS store
-          ignore: brands
 
   hassfest:
     name: Hassfest

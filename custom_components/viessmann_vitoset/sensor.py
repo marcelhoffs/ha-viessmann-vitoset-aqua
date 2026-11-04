@@ -45,6 +45,7 @@ SENSORS = (
         translation_key="water_total",
         device_class=SensorDeviceClass.WATER,
         native_unit_of_measurement=UnitOfVolume.LITERS,
+        suggested_display_precision=0,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
     SensorEntityDescription(
@@ -52,6 +53,7 @@ SENSORS = (
         translation_key="water_today",
         device_class=SensorDeviceClass.WATER,
         native_unit_of_measurement=UnitOfVolume.LITERS,
+        suggested_display_precision=0,
         state_class=SensorStateClass.TOTAL_INCREASING,
     ),
     # Rolling window: it goes up and down, so no state class fits.
@@ -60,12 +62,14 @@ SENSORS = (
         translation_key="water_last_seven_days",
         device_class=SensorDeviceClass.WATER,
         native_unit_of_measurement=UnitOfVolume.LITERS,
+        suggested_display_precision=0,
     ),
     SensorEntityDescription(
         key="flow_current",
         translation_key="flow_current",
         device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
         native_unit_of_measurement=UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
+        suggested_display_precision=1,
         state_class=SensorStateClass.MEASUREMENT,
     ),
     SensorEntityDescription(
@@ -73,6 +77,7 @@ SENSORS = (
         translation_key="flow_max",
         device_class=SensorDeviceClass.VOLUME_FLOW_RATE,
         native_unit_of_measurement=UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
+        suggested_display_precision=1,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(key="valve_position", translation_key="valve_position"),
