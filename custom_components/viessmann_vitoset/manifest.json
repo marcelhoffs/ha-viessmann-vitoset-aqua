@@ -9,7 +9,7 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/marcelhoffs/ha-viessmann-vitoset-aqua/issues",
   "loggers": ["PyViCare"],
-  "requirements": ["PyViCare>=2.64.0"],
+  "requirements": ["PyViCare>=2.63.0"],
   "single_config_entry": true,
   "version": "0.1.0"
 }
