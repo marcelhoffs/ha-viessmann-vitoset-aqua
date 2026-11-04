@@ -27,6 +27,8 @@ SENSORS = (
     SensorEntityDescription(
         key="salt_days_remaining",
         translation_key="salt_days_remaining",
+        # Not in icons.json: hassfest only allows mdi: there. See icons.js.
+        icon="vitoset:salinity",
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.DAYS,
         state_class=SensorStateClass.MEASUREMENT,
