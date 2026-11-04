@@ -89,6 +89,6 @@ def mock_vicare(softener: WaterTreatment):
         "Online",
         "WaterSoftener",
     )
-    with patch("custom_components.viessmann_vitoset.PyViCare") as vicare:
+    with patch("custom_components.viessmann_vitoset.api.PyViCare") as vicare:
         vicare.return_value.all_devices = [heatpump, device]
         yield vicare

@@ -1,7 +1,6 @@
 """Sensor platform for the Viessmann Vitoset Aqua integration."""
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from homeassistant.components.sensor import (
@@ -89,15 +88,6 @@ SENSORS = (
 )
 
 
-def leak_slots(data: dict[str, Any]) -> list[int]:
-    """Return the slots with a paired leak sensor.
-
-    shortcut: slots are read once at startup, so pairing a new sensor needs a
-    reload of the integration. Add a coordinator listener if that gets annoying.
-    """
-    return [int(m[1]) for key in data if (m := re.fullmatch(r"leak_(\d+)", key))]
-
-
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: VitosetConfigEntry,
@@ -106,7 +96,9 @@ async def async_setup_entry(
     """Set up the sensors."""
     coordinator = entry.runtime_data
     entities = [VitosetSensor(coordinator, description) for description in SENSORS]
-    for slot in leak_slots(coordinator.data):
+    # shortcut: slots are read once at startup, so pairing a new sensor needs a
+    # reload of the integration. Add a coordinator listener if that gets annoying.
+    for slot in coordinator.data["leak_slots"]:
         entities.append(
             VitosetSensor(
                 coordinator,

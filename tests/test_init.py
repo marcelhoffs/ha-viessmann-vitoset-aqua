@@ -3,11 +3,10 @@ from __future__ import annotations
 
 from datetime import timedelta
 import time
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 from PyViCare.PyViCareUtils import (
-    PyViCareInvalidCredentialsError,
-    PyViCareNotSupportedFeatureError,
+    PyViCareNotPaidForError,
     PyViCareRateLimitError,
 )
 from PyViCare.PyViCareWaterTreatment import WaterTreatment
@@ -22,6 +21,7 @@ from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
 from homeassistant.config_entries import SOURCE_REAUTH, ConfigEntryState
 from homeassistant.const import STATE_OFF, STATE_ON, STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers import entity_registry as er
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
@@ -76,6 +76,7 @@ def test_read_values_parses_a_real_payload(softener: WaterTreatment) -> None:
         "valve_position": "transition",
         "valve_motor": "off",
         "holiday_mode": False,
+        "leak_slots": [],
     }
 
 
@@ -86,6 +87,36 @@ def test_read_values_tolerates_a_missing_feature(
     values = read_values(softener)
     assert values["water_today"] is None
     assert values["salt_days_remaining"] == 181
+
+
+def test_read_values_survives_a_malformed_value(
+    softener: WaterTreatment, features: dict
+) -> None:
+    salt = _feature(features, "water.softener.salt.level.days")
+    salt["properties"]["remaining"]["value"] = None
+    _feature(features, "water.valves.shutoff.holiday")["properties"] = None
+    flow = _feature(features, "water.consumption.flow.current")
+    flow["properties"]["value"]["value"] = "n/a"
+
+    values = read_values(softener)
+
+    assert values["salt_days_remaining"] is None
+    assert values["holiday_mode"] is None
+    assert values["flow_current"] is None
+    assert values["water_total"] == 10508
+
+
+@pytest.mark.usefixtures("paired_leak_sensor")
+def test_disconnected_leak_sensor_is_unknown_not_dry(
+    softener: WaterTreatment, features: dict
+) -> None:
+    assert read_values(softener)["leak_0"] is False
+
+    softener.service.clear_cache()
+    leak = _feature(features, "water.leakDetection.sensors.leakage.0")
+    leak["properties"]["status"]["value"] = "disconnected"
+
+    assert read_values(softener)["leak_0"] is None
 
 
 async def test_setup_creates_entities(hass: HomeAssistant, mock_vicare) -> None:
@@ -170,7 +201,31 @@ async def test_no_softener_on_account_fails_setup(
 ) -> None:
     mock_vicare.return_value.all_devices = mock_vicare.return_value.all_devices[:1]
     entry = await _setup(hass)
-    assert entry.state is ConfigEntryState.SETUP_ERROR
+    assert entry.state is ConfigEntryState.SETUP_RETRY
+
+
+async def test_entry_without_unique_id_gets_one(
+    hass: HomeAssistant, mock_vicare
+) -> None:
+    entry = await _setup(hass)
+    assert entry.unique_id == "SERIAL"
+
+
+async def test_token_is_refreshed_before_each_poll(
+    hass: HomeAssistant, mock_vicare, api
+) -> None:
+    await _setup(hass)
+    gets = api.gets
+
+    with patch(
+        "custom_components.viessmann_vitoset.api.HomeAssistantAuth.async_refresh",
+        AsyncMock(side_effect=ConfigEntryAuthFailed),
+    ) as refresh:
+        async_fire_time_changed(hass, _next_poll())
+        await hass.async_block_till_done(wait_background_tasks=True)
+
+    refresh.assert_awaited_once()
+    assert api.gets == gets
 
 
 @pytest.mark.parametrize(
@@ -179,7 +234,9 @@ async def test_no_softener_on_account_fails_setup(
         PyViCareRateLimitError(
             {"extendedPayload": {"name": "x", "requestCountLimit": 1, "limitReset": 0}}
         ),
-        PyViCareNotSupportedFeatureError("PACKAGE_NOT_PAID_FOR"),
+        # The installations request skips the cache that would turn this into
+        # NotSupportedFeature.
+        PyViCareNotPaidForError({"extendedPayload": {"monetization": "x"}}),
     ],
 )
 async def test_api_error_during_setup_retries(
@@ -204,12 +261,40 @@ async def test_api_error_makes_entities_unavailable(
     assert _state(hass, SENSOR_DOMAIN, "salt_days_remaining").state == STATE_UNAVAILABLE
 
 
-async def test_rejected_credentials_start_reauth(
+async def test_rate_limit_waits_for_the_reset_time(
+    hass: HomeAssistant, mock_vicare, api
+) -> None:
+    await _setup(hass)
+    gets = api.gets
+    wait = timedelta(hours=1)
+    reset = (dt_util.utcnow() + wait).timestamp() * 1000
+    error = PyViCareRateLimitError(
+        {"extendedPayload": {"name": "x", "requestCountLimit": 1, "limitReset": reset}}
+    )
+
+    with patch.object(api, "get", side_effect=error) as get:
+        async_fire_time_changed(hass, _next_poll())
+        await hass.async_block_till_done(wait_background_tasks=True)
+        assert get.call_count == 1
+
+        # A normal poll interval later it must still be waiting.
+        async_fire_time_changed(hass, _next_poll(2))
+        await hass.async_block_till_done(wait_background_tasks=True)
+        assert get.call_count == 1
+
+    async_fire_time_changed(hass, dt_util.utcnow() + wait + SCAN_INTERVAL * 2)
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert api.gets == gets + 1
+    assert _state(hass, SENSOR_DOMAIN, "salt_days_remaining").state == "181"
+
+
+async def test_rejected_token_starts_reauth(
     hass: HomeAssistant, mock_vicare, api
 ) -> None:
     entry = await _setup(hass)
 
-    with patch.object(api, "get", side_effect=PyViCareInvalidCredentialsError()):
+    # What HomeAssistantAuth raises on a 401; see test_api.py.
+    with patch.object(api, "get", side_effect=ConfigEntryAuthFailed):
         async_fire_time_changed(hass, _next_poll())
         await hass.async_block_till_done(wait_background_tasks=True)
 

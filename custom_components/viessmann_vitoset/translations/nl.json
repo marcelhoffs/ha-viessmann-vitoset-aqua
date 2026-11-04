@@ -22,7 +22,11 @@
       "oauth_timeout": "Time-out bij het ophalen van het OAuth-token.",
       "oauth_unauthorized": "OAuth-autorisatiefout bij het ophalen van het toegangstoken.",
       "user_rejected_authorize": "Koppeling van het account geweigerd.",
-      "missing_configuration": "Er is geen Viessmann client-ID geconfigureerd."
+      "missing_configuration": "Er is geen Viessmann client-ID geconfigureerd.",
+      "oauth_implementation_unavailable": "Er zijn momenteel geen OAuth2-implementaties beschikbaar.",
+      "cannot_connect": "Je Viessmann-account kon niet worden gelezen. Controleer de logboeken van Home Assistant en probeer het opnieuw.",
+      "no_softener": "Geen waterontharder gevonden op dit Viessmann-account.",
+      "wrong_account": "Deze aanmelding hoort bij een andere waterontharder. Meld je aan met het Viessmann-account dat je oorspronkelijk hebt ingesteld."
     },
     "create_entry": {
       "default": "Aangemeld bij Viessmann."

@@ -22,7 +22,11 @@
       "oauth_timeout": "Timed out resolving the OAuth token.",
       "oauth_unauthorized": "OAuth authorization error while obtaining the access token.",
       "user_rejected_authorize": "Account linking rejected.",
-      "missing_configuration": "No Viessmann client ID is configured."
+      "missing_configuration": "No Viessmann client ID is configured.",
+      "oauth_implementation_unavailable": "No OAuth2 implementations are currently available.",
+      "cannot_connect": "Could not read your Viessmann account. Check the Home Assistant logs and try again.",
+      "no_softener": "No water softener found on this Viessmann account.",
+      "wrong_account": "This login belongs to a different softener. Log in with the Viessmann account you set up originally."
     },
     "create_entry": {
       "default": "Logged in to Viessmann."

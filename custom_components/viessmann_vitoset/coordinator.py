@@ -2,33 +2,39 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import UTC
 import logging
 from typing import Any
 
 from PyViCare.PyViCareUtils import (
-    PyViCareInvalidCredentialsError,
     PyViCareNotSupportedFeatureError,
+    PyViCareRateLimitError,
 )
 from PyViCare.PyViCareWaterTreatment import WaterTreatment
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
-from .api import API_ERRORS
+from .api import API_ERRORS, HomeAssistantAuth
 from .const import DOMAIN, SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
+
+MAX_RATE_LIMIT_WAIT = 24 * 60 * 60
 
 type VitosetConfigEntry = ConfigEntry[VitosetCoordinator]
 
 
 def _safe(read: Callable[[], Any]) -> Any:
-    """Return a value, or None when this device doesn't report it."""
+    """Return a value, or None when it's missing or malformed.
+
+    One unreadable value must not take every other entity down with it.
+    """
     try:
         return read()
-    except (KeyError, PyViCareNotSupportedFeatureError):
+    except (KeyError, TypeError, ValueError, PyViCareNotSupportedFeatureError):
         return None
 
 
@@ -55,8 +61,12 @@ def read_values(softener: WaterTreatment) -> dict[str, Any]:
         "valve_motor": _safe(softener.getShutoffMotorState),
         "holiday_mode": _safe(softener.getHolidayModeActive),
     }
-    for leak in softener.leakSensors:
-        values[f"leak_{leak.id}"] = _safe(leak.getLeakDetected)
+    leaks = softener.leakSensors
+    values["leak_slots"] = [leak.id for leak in leaks]
+    for leak in leaks:
+        # A disconnected sensor can't vouch for "no leak", so leave it unknown.
+        connected = _safe(leak.getStatus) == "connected"
+        values[f"leak_{leak.id}"] = _safe(leak.getLeakDetected) if connected else None
         values[f"leak_{leak.id}_battery"] = _safe(leak.getBatteryPercent)
         values[f"leak_{leak.id}_rssi"] = _safe(leak.getRssi)
     return values
@@ -66,7 +76,11 @@ class VitosetCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Polls the softener's features from the ViCare API."""
 
     def __init__(
-        self, hass: HomeAssistant, entry: VitosetConfigEntry, softener: WaterTreatment
+        self,
+        hass: HomeAssistant,
+        entry: VitosetConfigEntry,
+        softener: WaterTreatment,
+        auth: HomeAssistantAuth,
     ) -> None:
         super().__init__(
             hass,
@@ -76,6 +90,7 @@ class VitosetCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             update_interval=SCAN_INTERVAL,
         )
         self.softener = softener
+        self._auth = auth
 
     def _fetch(self) -> dict[str, Any]:
         # Clearing first makes a failed fetch raise, instead of PyViCare
@@ -83,11 +98,20 @@ class VitosetCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.softener.service.clear_cache()
         try:
             self.softener.service.fetch_all_features(self.softener.accessor)
-        except PyViCareInvalidCredentialsError as err:
-            raise ConfigEntryAuthFailed from err
+        except PyViCareRateLimitError as err:
+            # limitResetDate is naive UTC and can be in the past.
+            reset = err.limitResetDate.replace(tzinfo=UTC)
+            wait = (reset - dt_util.utcnow()).total_seconds()
+            raise UpdateFailed(
+                f"ViCare API rate limit reached: {err}",
+                retry_after=min(
+                    max(wait, SCAN_INTERVAL.total_seconds()), MAX_RATE_LIMIT_WAIT
+                ),
+            ) from err
         except API_ERRORS as err:
             raise UpdateFailed(f"Error communicating with ViCare: {err}") from err
         return read_values(self.softener)
 
     async def _async_update_data(self) -> dict[str, Any]:
+        await self._auth.async_refresh()
         return await self.hass.async_add_executor_job(self._fetch)
