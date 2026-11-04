@@ -1,2 +1,2 @@
 pytest-homeassistant-custom-component
-PyViCare>=2.64.0
+PyViCare==2.63.0  # lowest supported version

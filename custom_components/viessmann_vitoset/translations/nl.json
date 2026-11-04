@@ -1,6 +1,6 @@
 {
   "application_credentials": {
-    "description": "Maak een API-client aan op https://app.developer.viessmann-climatesolutions.com met redirect-URI https://my.home-assistant.io/redirect/oauth en vul de client-ID in. Viessmann-clients hebben geen secret, dus vul bij client secret een willekeurige waarde in."
+    "description": "Maak een API-client aan in het [Viessmann-ontwikkelaarsportaal]({developer_portal}) met redirect-URI `{redirect_uri}` en vul de client-ID in. Viessmann-clients hebben geen secret, dus vul bij client secret een willekeurige waarde in."
   },
   "config": {
     "step": {

@@ -15,6 +15,14 @@ from homeassistant.helpers.config_entry_oauth2_flow import (
 )
 
 
+async def async_get_description_placeholders(hass: HomeAssistant) -> dict[str, str]:
+    """Return the links shown in the credentials dialog."""
+    return {
+        "developer_portal": "https://app.developer.viessmann-climatesolutions.com",
+        "redirect_uri": "https://my.home-assistant.io/redirect/oauth",
+    }
+
+
 async def async_get_auth_implementation(
     hass: HomeAssistant, auth_domain: str, credential: ClientCredential
 ) -> VitosetOAuth2Implementation:
