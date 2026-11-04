@@ -1,0 +1,150 @@
+{
+  "data": [
+    {
+      "feature": "device.status",
+      "isEnabled": true,
+      "properties": {
+        "status": {
+          "type": "string",
+          "value": "OK"
+        }
+      }
+    },
+    {
+      "feature": "device.variant",
+      "isEnabled": true,
+      "properties": {
+        "value": {
+          "type": "string",
+          "value": "VitosetAqua87S"
+        }
+      }
+    },
+    {
+      "feature": "water.consumption.flow.current",
+      "isEnabled": true,
+      "properties": {
+        "value": {
+          "type": "number",
+          "unit": "liter/minute",
+          "value": 0
+        }
+      }
+    },
+    {
+      "feature": "water.consumption.flow.max",
+      "isEnabled": true,
+      "properties": {
+        "value": {
+          "type": "number",
+          "unit": "liter/minute",
+          "value": 11.9
+        }
+      }
+    },
+    {
+      "feature": "water.consumption.summary",
+      "isEnabled": true,
+      "properties": {
+        "currentDay": {
+          "type": "number",
+          "unit": "liter",
+          "value": 117
+        },
+        "lastSevenDays": {
+          "type": "number",
+          "unit": "liter",
+          "value": 125
+        },
+        "total": {
+          "type": "number",
+          "unit": "liter",
+          "value": 10508
+        }
+      }
+    },
+    {
+      "feature": "water.leakDetection.configuration.flowAlert",
+      "isEnabled": true,
+      "properties": {
+        "maxDuration": {
+          "type": "number",
+          "unit": "minute",
+          "value": 0
+        },
+        "maxFlow": {
+          "type": "number",
+          "unit": "liter/minute",
+          "value": 0
+        }
+      }
+    },
+    {
+      "feature": "water.leakDetection.sensors.leakage.0",
+      "isEnabled": false,
+      "properties": {}
+    },
+    {
+      "feature": "water.leakDetection.sensors.leakage.0.battery",
+      "isEnabled": false,
+      "properties": {}
+    },
+    {
+      "feature": "water.leakDetection.sensors.leakage.0.rssi",
+      "isEnabled": false,
+      "properties": {}
+    },
+    {
+      "feature": "water.softener.configuration.lowSaltAlert",
+      "isEnabled": true,
+      "properties": {
+        "lowLevelAlertDays": {
+          "type": "number",
+          "unit": "days",
+          "value": 14
+        }
+      }
+    },
+    {
+      "feature": "water.softener.salt.level.days",
+      "isEnabled": true,
+      "properties": {
+        "remaining": {
+          "type": "number",
+          "unit": "days",
+          "value": 181
+        }
+      }
+    },
+    {
+      "feature": "water.valves.shutoff.holiday",
+      "isEnabled": true,
+      "properties": {
+        "active": {
+          "type": "boolean",
+          "value": false
+        }
+      }
+    },
+    {
+      "feature": "water.valves.shutoff.motor",
+      "isEnabled": true,
+      "properties": {
+        "state": {
+          "type": "string",
+          "value": "off"
+        }
+      }
+    },
+    {
+      "feature": "water.valves.shutoff.position",
+      "isEnabled": true,
+      "properties": {
+        "value": {
+          "type": "string",
+          "value": "transition"
+        }
+      }
+    }
+  ]
+}

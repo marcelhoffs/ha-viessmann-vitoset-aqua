@@ -1,0 +1,15 @@
+{
+  "domain": "viessmann_vitoset",
+  "name": "Viessmann Vitoset Aqua",
+  "codeowners": ["@marcelhoffs"],
+  "config_flow": true,
+  "dependencies": ["application_credentials"],
+  "documentation": "https://github.com/marcelhoffs/ha-viessmann-vitoset-aqua",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/marcelhoffs/ha-viessmann-vitoset-aqua/issues",
+  "loggers": ["PyViCare"],
+  "requirements": ["PyViCare>=2.64.0"],
+  "single_config_entry": true,
+  "version": "0.1.0"
+}

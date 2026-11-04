@@ -1,0 +1,76 @@
+{
+  "application_credentials": {
+    "description": "Maak een API-client aan op https://app.developer.viessmann-climatesolutions.com met redirect-URI https://my.home-assistant.io/redirect/oauth en vul de client-ID in. Viessmann-clients hebben geen secret, dus vul bij client secret een willekeurige waarde in."
+  },
+  "config": {
+    "step": {
+      "pick_implementation": {
+        "title": "Kies een aanmeldmethode"
+      },
+      "reauth_confirm": {
+        "title": "Opnieuw aanmelden",
+        "description": "Je Viessmann-aanmelding is verlopen. Meld je opnieuw aan om softenergegevens te blijven ontvangen."
+      }
+    },
+    "abort": {
+      "reauth_successful": "Opnieuw aangemeld.",
+      "missing_credentials": "Voeg eerst je Viessmann client-ID toe als applicatiegegevens.",
+      "authorize_url_timeout": "Time-out bij het aanmaken van de autorisatie-URL.",
+      "no_url_available": "Geen URL beschikbaar. Controleer de netwerkconfiguratie van Home Assistant.",
+      "oauth_error": "Ongeldige tokengegevens ontvangen.",
+      "oauth_failed": "Fout bij het ophalen van het toegangstoken.",
+      "oauth_timeout": "Time-out bij het ophalen van het OAuth-token.",
+      "oauth_unauthorized": "OAuth-autorisatiefout bij het ophalen van het toegangstoken.",
+      "user_rejected_authorize": "Koppeling van het account geweigerd.",
+      "missing_configuration": "Er is geen Viessmann client-ID geconfigureerd."
+    },
+    "create_entry": {
+      "default": "Aangemeld bij Viessmann."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "holiday_mode": {
+        "name": "Vakantiemodus"
+      },
+      "leak": {
+        "name": "Lekkagesensor {slot}"
+      }
+    },
+    "sensor": {
+      "salt_days_remaining": {
+        "name": "Resterende zoutdagen"
+      },
+      "low_salt_alert_days": {
+        "name": "Drempel zoutalarm"
+      },
+      "water_total": {
+        "name": "Waterverbruik totaal"
+      },
+      "water_today": {
+        "name": "Waterverbruik vandaag"
+      },
+      "water_last_seven_days": {
+        "name": "Waterverbruik laatste 7 dagen"
+      },
+      "flow_current": {
+        "name": "Waterdebiet"
+      },
+      "flow_max": {
+        "name": "Maximaal waterdebiet"
+      },
+      "valve_position": {
+        "name": "Stand afsluitklep"
+      },
+      "valve_motor": {
+        "name": "Motor afsluitklep"
+      },
+      "leak_battery": {
+        "name": "Lekkagesensor {slot} batterij"
+      },
+      "leak_rssi": {
+        "name": "Lekkagesensor {slot} signaalsterkte"
+      }
+    }
+  }
+}
