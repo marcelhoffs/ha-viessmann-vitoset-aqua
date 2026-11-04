@@ -103,6 +103,17 @@ async def test_setup_creates_entities(hass: HomeAssistant, mock_vicare) -> None:
     assert await hass.config_entries.async_unload(entry.entry_id)
 
 
+@pytest.mark.parametrize(("key", "precision"), [("water_total", 0), ("flow_max", 1)])
+async def test_display_precision(
+    hass: HomeAssistant, mock_vicare, key: str, precision: int
+) -> None:
+    await _setup(hass)
+    registry = er.async_get(hass)
+    entity_id = registry.async_get_entity_id(SENSOR_DOMAIN, DOMAIN, f"SERIAL_{key}")
+    options = registry.async_get(entity_id).options["sensor"]
+    assert options["suggested_display_precision"] == precision
+
+
 @pytest.mark.usefixtures("paired_leak_sensor")
 async def test_leak_sensor_entities(hass: HomeAssistant, mock_vicare) -> None:
     await _setup(hass)
