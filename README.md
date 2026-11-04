@@ -11,8 +11,7 @@ one can go.
 
 Tested on a `VitosetAqua87S`. Requires Home Assistant 2026.10 or newer.
 
-This is a community project, not affiliated with or endorsed by Viessmann. The
-product image is Viessmann's.
+This is a community project, not affiliated with or endorsed by Viessmann.
 
 ## Entities
 
