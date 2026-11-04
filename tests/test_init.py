@@ -124,6 +124,10 @@ async def test_setup_creates_entities(hass: HomeAssistant, mock_vicare) -> None:
 
     assert entry.state is ConfigEntryState.LOADED
     assert _state(hass, SENSOR_DOMAIN, "salt_days_remaining").state == "181"
+    assert (
+        _state(hass, SENSOR_DOMAIN, "salt_days_remaining").attributes["icon"]
+        == "vitoset:salinity"
+    )
     assert _state(hass, SENSOR_DOMAIN, "water_total").attributes["device_class"] == "water"
     assert _state(hass, SENSOR_DOMAIN, "valve_position").state == "transition"
     assert _state(hass, BINARY_SENSOR_DOMAIN, "holiday_mode").state == STATE_OFF
@@ -132,6 +136,17 @@ async def test_setup_creates_entities(hass: HomeAssistant, mock_vicare) -> None:
     )
 
     assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_custom_icon_is_served(
+    hass: HomeAssistant, mock_vicare, hass_client
+) -> None:
+    await _setup(hass)
+
+    response = await (await hass_client()).get(f"/{DOMAIN}/icons.js")
+
+    assert response.status == 200
+    assert "customIcons.vitoset" in await response.text()
 
 
 @pytest.mark.parametrize(("key", "precision"), [("water_total", 0), ("flow_max", 1)])

@@ -6,9 +6,6 @@
       }
     },
     "sensor": {
-      "salt_days_remaining": {
-        "default": "mdi:shaker-outline"
-      },
       "low_salt_alert_days": {
         "default": "mdi:bell-alert-outline"
       },

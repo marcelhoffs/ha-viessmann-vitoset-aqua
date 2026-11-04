@@ -1,18 +1,36 @@
 """The Viessmann Vitoset Aqua integration."""
 from __future__ import annotations
 
+from pathlib import Path
+
+from homeassistant.components.frontend import add_extra_js_url
+from homeassistant.components.http import StaticPathConfig
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.config_entry_oauth2_flow import (
     OAuth2Session,
     async_get_config_entry_implementation,
 )
+from homeassistant.helpers.typing import ConfigType
 
 from .api import API_ERRORS, HomeAssistantAuth, find_softener
+from .const import DOMAIN
 from .coordinator import VitosetConfigEntry, VitosetCoordinator
 
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+ICONS_URL = f"/{DOMAIN}/icons.js"
 PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR]
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Serve the custom icon to the frontend."""
+    await hass.http.async_register_static_paths(
+        [StaticPathConfig(ICONS_URL, str(Path(__file__).parent / "icons.js"), False)]
+    )
+    add_extra_js_url(hass, ICONS_URL)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: VitosetConfigEntry) -> bool:
