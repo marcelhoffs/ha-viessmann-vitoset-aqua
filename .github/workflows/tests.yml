@@ -5,12 +5,19 @@ on:
     branches:
       - main
   pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
   workflow_dispatch:
 
 jobs:
   integration:
-    name: Integration
+    name: Integration (PyViCare ${{ matrix.pyvicare }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Oldest is the minimum in manifest.json, keep them in sync.
+        pyvicare: ["2.63.0", "latest"]
     steps:
       - uses: actions/checkout@v4
 
@@ -19,5 +26,8 @@ jobs:
           python-version: "3.14"
 
       - run: pip install -r requirements_test.txt
+
+      - if: matrix.pyvicare != 'latest'
+        run: pip install "PyViCare==${{ matrix.pyvicare }}"
 
       - run: pytest
