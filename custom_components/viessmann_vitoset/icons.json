@@ -1,0 +1,27 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "holiday_mode": {
+        "default": "mdi:beach"
+      }
+    },
+    "sensor": {
+      "salt_days_remaining": {
+        "default": "mdi:shaker-outline"
+      },
+      "low_salt_alert_days": {
+        "default": "mdi:bell-alert-outline"
+      },
+      "valve_position": {
+        "default": "mdi:valve",
+        "state": {
+          "open": "mdi:valve-open",
+          "closed": "mdi:valve-closed"
+        }
+      },
+      "valve_motor": {
+        "default": "mdi:engine-outline"
+      }
+    }
+  }
+}

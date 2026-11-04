@@ -24,7 +24,7 @@ product image is Viessmann's.
 | Water flow | Refreshed every 5 minutes, so a snapshot and not a live reading |
 | Shutoff valve position | |
 | Holiday mode | |
-| Leak sensor N | One per paired sensor, plus battery and signal strength (off by default). Reload the integration after pairing a new sensor |
+| Leak sensor | One per paired sensor, named as in the ViCare app, plus battery and signal strength (off by default). Unknown while a sensor is disconnected. Reload the integration after pairing a new sensor or renaming one |
 | Low salt alert threshold, maximum water flow, shutoff valve motor | Diagnostic |
 
 Everything is read-only: the API offers no commands for this device, so the

@@ -67,6 +67,7 @@ def read_values(softener: WaterTreatment) -> dict[str, Any]:
         # A disconnected sensor can't vouch for "no leak", so leave it unknown.
         connected = _safe(leak.getStatus) == "connected"
         values[f"leak_{leak.id}"] = _safe(leak.getLeakDetected) if connected else None
+        values[f"leak_{leak.id}_name"] = _safe(leak.getName)
         values[f"leak_{leak.id}_battery"] = _safe(leak.getBatteryPercent)
         values[f"leak_{leak.id}_rssi"] = _safe(leak.getRssi)
     return values

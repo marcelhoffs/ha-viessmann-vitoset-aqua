@@ -159,6 +159,29 @@ async def test_leak_sensor_entities(hass: HomeAssistant, mock_vicare) -> None:
 
 
 @pytest.mark.usefixtures("paired_leak_sensor")
+async def test_leak_sensor_uses_its_vicare_name(
+    hass: HomeAssistant, mock_vicare, features: dict
+) -> None:
+    features["data"].append(
+        {
+            "feature": "water.leakDetection.sensors.leakage.0.name",
+            "isEnabled": True,
+            "properties": {"name": {"type": "string", "value": "Basement"}},
+        }
+    )
+    await _setup(hass)
+
+    assert (
+        _state(hass, BINARY_SENSOR_DOMAIN, "leak_0").name
+        == "Vitoset Aqua Leak sensor Basement"
+    )
+    assert (
+        _state(hass, SENSOR_DOMAIN, "leak_0_battery").name
+        == "Vitoset Aqua Leak sensor Basement battery"
+    )
+
+
+@pytest.mark.usefixtures("paired_leak_sensor")
 async def test_leak_state_tracks_api_and_unreadable_is_not_off(
     hass: HomeAssistant, mock_vicare, features: dict
 ) -> None:
