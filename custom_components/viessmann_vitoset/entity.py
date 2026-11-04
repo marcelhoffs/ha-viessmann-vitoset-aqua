@@ -31,7 +31,8 @@ class VitosetEntity(CoordinatorEntity[VitosetCoordinator]):
             model=coordinator.data["model"],
         )
         if leak_slot is not None:
-            self._attr_translation_placeholders = {"slot": str(leak_slot + 1)}
+            name = coordinator.data.get(f"leak_{leak_slot}_name")
+            self._attr_translation_placeholders = {"name": name or str(leak_slot + 1)}
 
     @property
     def _value(self):
