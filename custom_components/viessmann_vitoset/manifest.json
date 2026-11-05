@@ -11,5 +11,5 @@
   "loggers": ["PyViCare"],
   "requirements": ["PyViCare>=2.63.0"],
   "single_config_entry": true,
-  "version": "1.0.1"
+  "version": "1.0.2"
 }
